@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>정보 입력 (24시간 클라우드 서버)</title>
+</head>
+<body>
+    <h2>이름과 나이를 입력해주세요</h2>
+    <form id="dataForm">
+        <input type="text" id="name" required placeholder="이름">
+        <input type="number" id="age" required placeholder="나이">
+        <button type="submit">깃허브에 저장</button>
+    </form>
+
+    <script>
+        // 💡 3단계에서 발급받은 Vercel 주소 + /api/save
+        const API_URL = 'https://my-api-server-nine.vercel.app/api/save'; 
+
+        document.getElementById('dataForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            btn.innerText = '저장 중...';
+
+            const data = {
+                name: document.getElementById('name').value,
+                age: document.getElementById('age').value
+            };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    alert("깃허브에 성공적으로 저장되었습니다!");
+                    e.target.reset();
+                } else {
+                    alert("오류 발생: " + result.message);
+                }
+            } catch (error) {
+                alert("서버 통신 실패");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = '깃허브에 저장';
+            }
+        });
+    </script>
+</body>
+</html>
